@@ -1,11 +1,13 @@
-import { page, test } from '@playwright/test'
+import { test } from '@playwright/test'
 import { login } from '../pages/LoginPage';
+import { calculateTotal, getTotals, getValuesTotal } from '../pages/HomePage';
 
 test.beforeEach(async ({page}) => {
     await login(page);
-    await page.waitForTimeout(5000);
 });
 
-test('demo', async ({page}) => {
-    console.log('demo');
+test('Assessment', async ({page}) => {
+    const rows = await getValuesTotal(page);
+    await calculateTotal(rows);
+    //console.log(await getTotals(rows));
 });

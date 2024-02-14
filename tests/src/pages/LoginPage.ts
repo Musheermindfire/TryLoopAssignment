@@ -9,9 +9,9 @@ export const loginPageObject = {
 }
 
 export async function login(page: Page) {
-    await page.goto('/');
-    await page.click(loginPageObject.signWithPasswordLink);
-    await page.fill(loginPageObject.emailInp, process.env.username ?? '');
-    await page.fill(loginPageObject.passwordInp, process.env.password ?? '');
-    await page.getByTestId(loginPageObject.signInBtn).click();
+        await page.goto('/');
+        await page.click(loginPageObject.signWithPasswordLink);
+        await page.fill(loginPageObject.emailInp, process.env.username ?? '');
+        await page.fill(loginPageObject.passwordInp, process.env.password ?? '');
+        await page.getByTestId(loginPageObject.signInBtn).click();
 }
