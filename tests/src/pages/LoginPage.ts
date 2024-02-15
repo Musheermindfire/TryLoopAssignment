@@ -1,5 +1,6 @@
 import { Page } from "@playwright/test";
 import 'dotenv/config';
+import { homePageObjects } from "./HomePage";
 
 export const loginPageObject = {
     signWithPasswordLink: "a[href='/login/password']",
@@ -9,9 +10,13 @@ export const loginPageObject = {
 }
 
 export async function login(page: Page) {
-        await page.goto('/');
-        await page.click(loginPageObject.signWithPasswordLink);
-        await page.fill(loginPageObject.emailInp, process.env.username ?? '');
-        await page.fill(loginPageObject.passwordInp, process.env.password ?? '');
-        await page.getByTestId(loginPageObject.signInBtn).click();
+    // This will go to the baseURL given in config, and perform action to login
+    await page.goto('/');
+    await page.click(loginPageObject.signWithPasswordLink);
+    await page.fill(loginPageObject.emailInp, process.env.username ?? '');
+    await page.fill(loginPageObject.passwordInp, process.env.password ?? '');
+    await page.getByTestId(loginPageObject.signInBtn).click();
+
+    // Skip the mobile linkup
+    await page.click(homePageObjects.skipMobileBtn);
 }

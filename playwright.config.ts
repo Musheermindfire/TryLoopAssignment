@@ -31,7 +31,7 @@ export default defineConfig({
     viewport: { width: 1920, height: 1080 },
     video: 'on',
   },
-  timeout: 60 * 1000,
+  timeout: 100 * 1000,
 
   /* Configure projects for major browsers */
   // projects: [

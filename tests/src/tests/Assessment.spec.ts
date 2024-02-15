@@ -1,12 +1,16 @@
 import { test, expect } from '@playwright/test'
 import { login } from '../pages/LoginPage';
-import { calculateTotal, getTotals, getValuesTotal } from '../pages/HomePage';
+import { calculateTotal, getTotals, getValuesTotal, goToPage } from '../pages/HomePage';
+import { selectLocation, selectMarketplace } from '../pages/Transactions';
 
 test.beforeEach(async ({page}) => {
     await login(page);
 });
 
-test('Action steps', async ({page}) => {
+test('Part 1: Data Verification', async ({page}) => {
+    // Navigate to history by store pane
+    await goToPage(page, 'historybystore');
+
     // Get the indiviual total of columns per pages as rows
     const rows = await getValuesTotal(page);
 
@@ -35,9 +39,21 @@ test('Action steps', async ({page}) => {
     // Displaying calcuated total and fetched grand total for 7 
     console.log(`Grand Total ${grantTotal}`);
     console.log(`Calculated grandtotal${result}`);
-    
+
     // Asserting the calcuated result is correct
     result.forEach((v, i) => {
         expect(+result[i].toFixed(2)).toBe(grantTotal[i]);
     })
+});
+
+test('Part 2: Data Extraction and Validation', async ({page}) => {
+    // Navigate to transaction pane
+    await goToPage(page, 'historybystore');
+
+    // Select locations
+    await selectLocation(page, ['Artisan Alchemy', 'Blissful Buffet']);
+
+    // Select marketplace
+    await selectMarketplace(page, 'Grubhub')
+    await page.waitForTimeout(10000);
 });

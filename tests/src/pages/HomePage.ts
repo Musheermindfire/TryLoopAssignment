@@ -1,27 +1,36 @@
 import { Locator, Page } from "@playwright/test";
+import { transactionsObject } from "./Transactions";
 
 // Locator object
 export const homePageObjects = {
     resetBtn: "button >> text=Reset",
     chargeBackPane: "span >> text=3P Chargebacks",
     historyByStoreBtn: "span >> text=History by Store",
+    transactionBtn: "span >> text=Transactions",
     tableRow: "table tbody tr",
     skipMobileBtn: "button >> text=Skip for now",
     pageNextBtn: "pagination-next",
+}
+
+export async function goToPage(page: Page, pageName: string) {
+    await page.click(homePageObjects.chargeBackPane);
+    if (pageName.toLowerCase() == "historybystore") {
+        // Navigate to the correct page to fetch the data from web table
+        await page.click(homePageObjects.historyByStoreBtn);
+        await page.waitForSelector("h6 >> text=Grand Total", { state: 'visible'});
+    } else if (pageName.toLowerCase() == "transactions") {
+        // Navigate to transaction page
+        await page.click(homePageObjects.transactionBtn);
+        await page.waitForSelector(transactionsObject.downloadBtn, { state: 'visible'});
+    } else {
+        console.log("No match found");
+    }
 }
 
 export async function getValuesTotal(page: Page) {
     // This function wil extract row wise data for all the pages
     // containing the data
     const allTableTotal = []; // Contains total of all the rows of all pages
-
-    // Skip the mobile linkup
-    await page.click(homePageObjects.skipMobileBtn);
-
-    // Navigate to the correct page to fetch the data from web table
-    await page.click(homePageObjects.chargeBackPane);
-    await page.click(homePageObjects.historyByStoreBtn);
-    await page.waitForSelector("h6 >> text=Grand Total", { state: 'visible'});
 
     // This code will keep extracting the data from all the pages until the last page
     // is reached and store it in the allTableTotal variable
