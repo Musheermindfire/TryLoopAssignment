@@ -14,38 +14,51 @@ export async function getValuesTotal(page: Page) {
     // This function wil extract row wise data for all the pages
     // containing the data
     const allTableTotal = []; // Contains total of all the rows of all pages
+
+    // Skip the mobile linkup
     await page.click(homePageObjects.skipMobileBtn);
+
+    // Navigate to the correct page to fetch the data from web table
     await page.click(homePageObjects.chargeBackPane);
     await page.click(homePageObjects.historyByStoreBtn);
     await page.waitForSelector("h6 >> text=Grand Total", { state: 'visible'});
+
+    // This code will keep extracting the data from all the pages until the last page
+    // is reached and store it in the allTableTotal variable
     while (await page.getByTestId(homePageObjects.pageNextBtn).isEnabled()) {
         await page.waitForSelector("h6 >> text=Grand Total", { state: 'visible'});
+
         allTableTotal.push(await calculateTotal(await page.locator(homePageObjects.tableRow).all()));
         await page.getByTestId(homePageObjects.pageNextBtn).click();
     }
     await page.waitForSelector("h6 >> text=Grand Total", { state: 'visible'});
     allTableTotal.push(await calculateTotal(await page.locator(homePageObjects.tableRow).all()));
+
+    // return the calculated value of each page in form of 3d number array
+    // where each row represents the total of the pages displayed
     return allTableTotal;
 }
 
 export async function calculateTotal(loc: Locator[]) {
+    // This method will get all the row of a single page and then calculate the total
+    // of all the columns and save it in total variable
     // Calculate total for each column
     const total: Array<number> = Array(await loc[0].locator('td').count() -1).fill(0);
     for (let i = 0; i < loc.length - 2; i++) {
         let columns = await loc[i].locator('td').allInnerTexts();
         columns = columns.filter( ele => ele != '')
-        console.log(columns);
         columns.forEach((v, i) => {
             total[i] += +(v.slice(1).replace(',', ''));
-        })
-        console.log(total);
+        });
     }
+
+    // This will return a 2d number array with the total of all the columns as its element
+    // which will further create a single row of 3d array which is returned by getValuesTotal()
     return(total); 
 }
 
 export async function getTotals(page: Page) {
-    // This will return the total values as an array which
-    // can be used to assert later on
+    // This will return the grand total displayed at the last row of the web table
     const total: number[] = [];
     (await page.locator(homePageObjects.tableRow).last().locator('td').allTextContents()).filter((ele: string) => ele != '').forEach((v, i) => {
         total[i] = parseFloat(v.slice(1).replace(',', ''));
