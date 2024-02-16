@@ -5,6 +5,7 @@ export const transactionsObject = {
     applyBtn: 'applyBtn',
     downloadBtn: "button >> text=Download",
     tableRow: "table tbody tr",
+    pageNextBtn: "pagination-next",
 }
 
 export async function selectLocation(page: Page, locations: string[]| string) {
@@ -51,6 +52,32 @@ export async function selectMarketplace(page: Page, marketplaces: string[] | str
     await page.waitForSelector(transactionsObject.downloadBtn, { state: 'visible'});
 }
 
-export async function getTableContent(page: Page) {
-    
+export async function getTableRowContent(page: Page) {
+    await page.waitForSelector('img[alt="Grubhub"]', {state: 'visible'});
+    const csvTable:string[][] = [];
+    (await cleanTableData(await page.locator(transactionsObject.tableRow).all())).forEach((v) => {
+        csvTable.push(v);
+    });  
+    await page.getByTestId(transactionsObject.pageNextBtn).click();
+    (await cleanTableData(await page.locator(transactionsObject.tableRow).all())).forEach((v) => {
+        csvTable.push(v);
+    }); 
+    return (csvTable);
+}
+
+async function cleanTableData(loc: Locator[]) {
+    let spanrows:string[] = [];
+    let rows:string[][] = [];
+    for (let i = 0; i < loc.length - 1; i++) {
+        let columns = await loc[i].locator('td').allInnerTexts();
+        // Will fill the first three element of row that contain the order id, location
+        // and order state to those where above three elements are missing
+        if (columns.length == 8) {
+            spanrows = columns.slice(0,3);
+        } else {
+            columns = [...spanrows, ...columns];
+        }
+        rows.push(columns);
+    }
+    return rows;
 }

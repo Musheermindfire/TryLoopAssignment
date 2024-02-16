@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { login } from '../pages/LoginPage';
 import { calculateTotal, getTotals, getValuesTotal, goToPage } from '../pages/HomePage';
-import { selectLocation, selectMarketplace } from '../pages/Transactions';
+import { getTableContent, getTableRowContent, selectLocation, selectMarketplace } from '../pages/Transactions';
 
 test.beforeEach(async ({page}) => {
     await login(page);
@@ -48,12 +48,19 @@ test('Part 1: Data Verification', async ({page}) => {
 
 test('Part 2: Data Extraction and Validation', async ({page}) => {
     // Navigate to transaction pane
-    await goToPage(page, 'historybystore');
+    await goToPage(page, 'transactions');
 
     // Select locations
     await selectLocation(page, ['Artisan Alchemy', 'Blissful Buffet']);
 
     // Select marketplace
-    await selectMarketplace(page, 'Grubhub')
-    await page.waitForTimeout(10000);
+    await selectMarketplace(page, 'Grubhub');
+
+    // Get the rows of table in form of array
+    const row = await getTableRowContent(page);
+
+    // Sort the array with respect to ORDER_ID
+    const sortedRows = row.sort((a, b) => {
+        return a[0].localeCompare(b[0]);
+    });
 });
