@@ -70,6 +70,6 @@ test('Part 2: Data Extraction and Validation', async ({page}) => {
     // Download cdv file(BONUS STEPS)
     await downloadCSV(page);
 
-    // Cmompare csv 1st colum
+    // Compare csv 1st colum
     await compareCSVs();
 });

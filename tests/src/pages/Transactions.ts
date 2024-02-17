@@ -125,15 +125,15 @@ export async function compareCSVs() {
 
     await new Promise((resolve, reject) => {
         fs.createReadStream(filePath2).pipe(csvParser()).on('data', (rows) =>{
-            csv2Column.push(rows[Object.keys(rows)[0]]);
+            csv2Column.push(`#${rows[Object.keys(rows)[0]]}`);
         })
         .on('end', resolve)
         .on('error', reject);
     });
 
     // Compare and assert 2 array
-    const compare = JSON.stringify(csv1Column).replace('#', '') == JSON.stringify(csv2Column);
-    console.log(JSON.stringify(csv1Column).replace('#', ''));
+    const compare = JSON.stringify(csv1Column) == JSON.stringify(csv2Column);
+    console.log(JSON.stringify(csv1Column));
     console.log(JSON.stringify(csv2Column));
     expect(compare).toBe(true);
 }
