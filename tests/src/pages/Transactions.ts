@@ -1,5 +1,6 @@
-import { Locator, Page } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 import * as fs from "fs";
+import csvParser from 'csv-parser';
 
 export const transactionsObject = {
     selectDrpDwn: 'selectBtn', 
@@ -105,4 +106,34 @@ export async function createCSV(arr: string[][]) {
 export async function downloadCSV(page: Page) {
     await page.locator(transactionsObject.downloadBtn).click();
     (await page.waitForEvent('download')).saveAs('csv/downloadedCSV.csv');
+}
+
+export async function compareCSVs() {
+    const filePath1 = "csv/createdCSV.csv";
+    const filePath2 = "csv/downloadedCSV.csv";
+
+    const csv1Column: any[] = [];
+    const csv2Column: any[] = [];
+
+    await new Promise((resolve, reject) => {
+        fs.createReadStream(filePath1).pipe(csvParser()).on('data', (rows) =>{
+            csv1Column.push(rows[Object.keys(rows)[0]]);
+        })
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    await new Promise((resolve, reject) => {
+        fs.createReadStream(filePath2).pipe(csvParser()).on('data', (rows) =>{
+            csv2Column.push(rows[Object.keys(rows)[0]]);
+        })
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    // Compare and assert 2 array
+    const compare = JSON.stringify(csv1Column).replace('#', '') == JSON.stringify(csv2Column);
+    console.log(JSON.stringify(csv1Column).replace('#', ''));
+    console.log(JSON.stringify(csv2Column));
+    expect(compare).toBe(true);
 }

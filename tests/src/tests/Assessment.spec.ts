@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { login } from '../pages/LoginPage';
 import { calculateTotal, getTotals, getValuesTotal, goToPage } from '../pages/HomePage';
-import { createCSV, downloadCSV, getTableRowContent, selectLocation, selectMarketplace } from '../pages/Transactions';
+import { compareCSVs, createCSV, downloadCSV, getTableRowContent, selectLocation, selectMarketplace } from '../pages/Transactions';
 
 test.beforeEach(async ({page}) => {
     await login(page);
@@ -67,6 +67,9 @@ test('Part 2: Data Extraction and Validation', async ({page}) => {
     // Create a csv out of the sorted array
     await createCSV(sortedRows);
 
-    // Download cdv file
+    // Download cdv file(BONUS STEPS)
     await downloadCSV(page);
+
+    // Cmompare csv 1st colum
+    await compareCSVs();
 });
