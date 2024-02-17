@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 import { login } from '../pages/LoginPage';
 import { calculateTotal, getTotals, getValuesTotal, goToPage } from '../pages/HomePage';
-import { getTableContent, getTableRowContent, selectLocation, selectMarketplace } from '../pages/Transactions';
+import { createCSV, downloadCSV, getTableRowContent, selectLocation, selectMarketplace } from '../pages/Transactions';
 
 test.beforeEach(async ({page}) => {
     await login(page);
@@ -63,4 +63,10 @@ test('Part 2: Data Extraction and Validation', async ({page}) => {
     const sortedRows = row.sort((a, b) => {
         return a[0].localeCompare(b[0]);
     });
+
+    // Create a csv out of the sorted array
+    await createCSV(sortedRows);
+
+    // Download cdv file
+    await downloadCSV(page);
 });

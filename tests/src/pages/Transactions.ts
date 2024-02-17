@@ -1,4 +1,6 @@
 import { Locator, Page } from "@playwright/test";
+import * as fs from "fs";
+
 export const transactionsObject = {
     selectDrpDwn: 'selectBtn', 
     selectAllCheckBox: 'selectAllCheckbox',
@@ -68,7 +70,7 @@ export async function getTableRowContent(page: Page) {
 async function cleanTableData(loc: Locator[]) {
     let spanrows:string[] = [];
     let rows:string[][] = [];
-    for (let i = 0; i < loc.length - 1; i++) {
+    for (let i = 0; i < loc.length; i++) {
         let columns = await loc[i].locator('td').allInnerTexts();
         // Will fill the first three element of row that contain the order id, location
         // and order state to those where above three elements are missing
@@ -80,4 +82,27 @@ async function cleanTableData(loc: Locator[]) {
         rows.push(columns);
     }
     return rows;
+}
+
+export async function createCSV(arr: string[][]) {
+    const headers = [
+        'Order I',
+        'Location',
+        'Order State',
+        'Type',
+        'Lost Sale',
+        'Net Payout',
+        'Payout ID',
+        'Payout Date'
+    ]
+    const csvData = [headers, ...arr].map((row) => {
+        return row.join(',');
+    }).join('\n');;
+
+    fs.writeFileSync('csv/createdCSV.csv', csvData, 'utf-8');
+}
+
+export async function downloadCSV(page: Page) {
+    await page.locator(transactionsObject.downloadBtn).click();
+    (await page.waitForEvent('download')).saveAs('csv/downloadedCSV.csv');
 }
