@@ -67,7 +67,7 @@ test('Part 2: Data Extraction and Validation', async ({page}) => {
     // Create a csv out of the sorted array
     await createCSV(sortedRows);
 
-    // Download cdv file(BONUS STEPS)
+    // Download cdv file (BONUS TASK)
     await downloadCSV(page);
 
     // Compare csv 1st colum
